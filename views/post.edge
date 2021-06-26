@@ -1,0 +1,75 @@
+@layout('layouts.app')
+@section('content')
+    <!-- Page Header -->
+    <header class="masthead" style="background-image: url('{{ post.image }}')">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="post-heading">
+              <h1>{{ post.title }}</h1>
+              <span class="meta">Posted by
+                <a href="#">{{ post.username }}</a>
+                on {{ post.createdAt.toDateString() }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Post Content -->
+    <article>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            {{ post.content }}
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <hr>
+    <!-- comment -->
+    <div class="comments">
+        <script type="text/javascript">
+        if (typeof comments != 'undefined' && comments != null) {
+                comments.forEach( function ( commentData ){
+                       
+                    <p> {{commentData.comment}} </p>
+                   
+                         });
+                    } 
+                    </script>
+ 
+</div>
+ 
+<textarea id="comment" rows="3" cols="50"></textarea></br>
+<input type="hidden" id="postId" value='{{ post._id }}'>
+<input type="submit" value="Send" id="send"> 
+</body>
+<script type="text/javascript">
+var socket = io();
+    $('#send').click(function(){
+        var comment = $('#comment').val();
+        var postId = $('#postId').val();
+        if(comment != ''){
+            var data = {'comment': comment,'postId': postId};
+        $('.comments').append("<p>"+comment+"</p>");
+        $('#comment').val('');
+        }
+        
+    socket.emit('comment',data);
+ 
+ 
+    });
+ 
+    socket.on('comment',function(data){
+        var postId =  postId;
+        if(postId==data.postId){
+            $('.comments').append("<p>"+data.comment+"</p>");
+        }
+        });
+        </script>
+@endsection 
+ 
